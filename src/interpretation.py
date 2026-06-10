@@ -255,18 +255,24 @@ def generate_interpretation_report(shap_results: dict, model_metrics: dict = Non
     
     report.append("\n三、AI特征贡献度分析")
     report.append("-" * 40)
-    for _, row in shap_results['ai_contributions'].iterrows():
-        report.append(f"{row['AI_Feature']}:")
-        report.append(f"  - 平均绝对SHAP值: {row['Mean_Absolute_SHAP']:.4f}")
-        report.append(f"  - 平均SHAP值: {row['Mean_SHAP']:.4f}")
-        report.append(f"  - 正向贡献比例: {row['Positive_Ratio']:.2%}")
+    if shap_results['ai_contributions'].empty:
+        report.append("未检测到AI特征（如情感分析、评论数量等）")
+    else:
+        for _, row in shap_results['ai_contributions'].iterrows():
+            report.append(f"{row['AI_Feature']}:")
+            report.append(f"  - 平均绝对SHAP值: {row['Mean_Absolute_SHAP']:.4f}")
+            report.append(f"  - 平均SHAP值: {row['Mean_SHAP']:.4f}")
+            report.append(f"  - 正向贡献比例: {row['Positive_Ratio']:.2%}")
     
     report.append("\n四、关键发现")
     report.append("-" * 40)
     
     # 识别最重要的AI特征
-    top_ai_feature = shap_results['ai_contributions'].iloc[0]
-    report.append(f"1. 最重要的AI特征是'{top_ai_feature['AI_Feature']}'，其平均绝对SHAP值为{top_ai_feature['Mean_Absolute_SHAP']:.4f}")
+    if not shap_results['ai_contributions'].empty:
+        top_ai_feature = shap_results['ai_contributions'].iloc[0]
+        report.append(f"1. 最重要的AI特征是'{top_ai_feature['AI_Feature']}'，其平均绝对SHAP值为{top_ai_feature['Mean_Absolute_SHAP']:.4f}")
+    else:
+        report.append("1. 数据集中未包含AI特征，无法进行AI特征贡献分析")
     
     # 分析特征影响方向
     positive_features = shap_results['feature_effects'][

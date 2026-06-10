@@ -18,11 +18,19 @@ def create_derived_features(df: pd.DataFrame) -> pd.DataFrame:
     df_engineered = df.copy()
     
     # 1. 车龄特征（假设当前年份为2024）
-    if 'Model Year' in df_engineered.columns:
+    if 'model_year' in df_engineered.columns:
+        df_engineered['car_age'] = 2024 - df_engineered['model_year']
+    elif 'Model Year' in df_engineered.columns:
         df_engineered['car_age'] = 2024 - df_engineered['Model Year']
     
     # 2. 价格区间分箱
-    if 'Base MSRP' in df_engineered.columns:
+    if 'base_msrp' in df_engineered.columns:
+        df_engineered['price_range'] = pd.cut(
+            df_engineered['base_msrp'],
+            bins=[0, 30000, 50000, 80000, float('inf')],
+            labels=['Low', 'Medium', 'High', 'Luxury']
+        )
+    elif 'Base MSRP' in df_engineered.columns:
         df_engineered['price_range'] = pd.cut(
             df_engineered['Base MSRP'],
             bins=[0, 30000, 50000, 80000, float('inf')],
@@ -30,17 +38,29 @@ def create_derived_features(df: pd.DataFrame) -> pd.DataFrame:
         )
     
     # 3. 续航效率（每万元价格对应的续航里程）
-    if 'Electric Range' in df_engineered.columns and 'Base MSRP' in df_engineered.columns:
+    if 'electric_range' in df_engineered.columns and 'base_msrp' in df_engineered.columns:
+        df_engineered['range_efficiency'] = (
+            df_engineered['electric_range'] / (df_engineered['base_msrp'] + 1) * 10000
+        )
+    elif 'Electric Range' in df_engineered.columns and 'Base MSRP' in df_engineered.columns:
         df_engineered['range_efficiency'] = (
             df_engineered['Electric Range'] / (df_engineered['Base MSRP'] + 1) * 10000
         )
     
     # 4. 充电速度特征（如果有相关数据）
-    if 'Fast Charge Speed' in df_engineered.columns:
+    if 'fast_charge_speed' in df_engineered.columns:
+        df_engineered['fast_charge_capable'] = (df_engineered['fast_charge_speed'] > 0).astype(int)
+    elif 'Fast Charge Speed' in df_engineered.columns:
         df_engineered['fast_charge_capable'] = (df_engineered['Fast Charge Speed'] > 0).astype(int)
     
     # 5. 车型年代分组
-    if 'Model Year' in df_engineered.columns:
+    if 'model_year' in df_engineered.columns:
+        df_engineered['generation'] = pd.cut(
+            df_engineered['model_year'],
+            bins=[2010, 2015, 2018, 2020, 2022, 2025],
+            labels=['2010-2015', '2016-2018', '2019-2020', '2021-2022', '2023-2025']
+        )
+    elif 'Model Year' in df_engineered.columns:
         df_engineered['generation'] = pd.cut(
             df_engineered['Model Year'],
             bins=[2010, 2015, 2018, 2020, 2022, 2025],
