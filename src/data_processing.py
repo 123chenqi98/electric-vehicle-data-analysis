@@ -2,9 +2,39 @@
 import pandas as pd
 import numpy as np
 from typing import List, Dict, Optional
+import os
+
+def get_project_root() -> str:
+    """获取项目根目录"""
+    # 当前文件位于 src/ 目录下，项目根目录是其父目录
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.dirname(current_dir)
 
 def load_data(file_path: str, encoding: str = 'utf-8') -> pd.DataFrame:
     """加载数据集"""
+    # 如果路径不是绝对路径，尝试多种路径解析方式
+    if not os.path.isabs(file_path):
+        # 尝试1: 相对于项目根目录
+        project_root_path = os.path.join(get_project_root(), file_path)
+        # 尝试2: 相对于当前工作目录
+        cwd_path = os.path.join(os.getcwd(), file_path)
+        # 尝试3: 如果路径以../开头，尝试从当前文件目录解析
+        if file_path.startswith('../'):
+            src_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_path)
+        else:
+            src_path = None
+        
+        # 选择存在的路径
+        if os.path.exists(project_root_path):
+            file_path = project_root_path
+        elif os.path.exists(cwd_path):
+            file_path = cwd_path
+        elif src_path and os.path.exists(src_path):
+            file_path = src_path
+        else:
+            # 默认使用项目根目录路径
+            file_path = project_root_path
+    
     try:
         return pd.read_csv(file_path, encoding=encoding)
     except:
@@ -151,8 +181,12 @@ def preprocess_ev_data(df: pd.DataFrame) -> pd.DataFrame:
 
 def save_processed_data(df: pd.DataFrame, filename: str):
     """保存处理后的数据"""
-    df.to_csv(f'data/processed/{filename}', index=False, encoding='utf-8-sig')
+    output_path = os.path.join(get_project_root(), f'data/processed/{filename}')
+    # 确保目录存在
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False, encoding='utf-8-sig')
 
 def load_processed_data(filename: str) -> pd.DataFrame:
     """加载处理后的数据"""
-    return pd.read_csv(f'data/processed/{filename}', encoding='utf-8-sig')
+    file_path = os.path.join(get_project_root(), f'data/processed/{filename}')
+    return pd.read_csv(file_path, encoding='utf-8-sig')

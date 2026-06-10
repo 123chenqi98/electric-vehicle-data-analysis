@@ -25,8 +25,23 @@ def split_data(df: pd.DataFrame, target_col: str, test_size: float = 0.2, random
     Returns:
         X_train, X_test, y_train, y_test
     """
-    X = df.drop(target_col, axis=1)
-    y = df[target_col]
+    # 移除目标变量为空的行
+    df_clean = df.dropna(subset=[target_col]).copy()
+    
+    X = df_clean.drop(target_col, axis=1)
+    y = df_clean[target_col]
+    
+    # 确保y是Series（不是DataFrame）
+    if isinstance(y, pd.DataFrame):
+        y = y.iloc[:, 0]
+    
+    # 确保y是数值类型
+    y = pd.to_numeric(y, errors='coerce')
+    
+    # 再次移除NaN值
+    valid_mask = ~y.isna()
+    X = X[valid_mask].copy()
+    y = y[valid_mask]
     
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state
@@ -96,11 +111,29 @@ def build_xgboost_model(X_train: pd.DataFrame, y_train: pd.Series,
             'objective': 'reg:squarederror'
         }
     
+    # 确保y_train是Series
+    if isinstance(y_train, pd.DataFrame):
+        y_train = y_train.iloc[:, 0]
+    
+    # 确保X_train只包含数值列
+    X_train = X_train.select_dtypes(include=[np.number])
+    
+    # 处理缺失值
+    X_train = X_train.fillna(X_train.median())
+    
     model = xgb.XGBRegressor(**params)
     model.fit(X_train, y_train)
     
     metrics = None
     if X_test is not None and y_test is not None:
+        # 确保y_test是Series
+        if isinstance(y_test, pd.DataFrame):
+            y_test = y_test.iloc[:, 0]
+        
+        # 确保X_test只包含数值列
+        X_test = X_test.select_dtypes(include=[np.number])
+        X_test = X_test.fillna(X_test.median())
+        
         y_pred = model.predict(X_test)
         metrics = {
             'mse': mean_squared_error(y_test, y_pred),

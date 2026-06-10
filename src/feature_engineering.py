@@ -189,8 +189,22 @@ def build_feature_matrix(df: pd.DataFrame, target_col: str,
     # 移除原始分类列（保留编码后的列）
     X = X.drop([col for col in categorical_cols if col in X.columns], axis=1)
     
+    # 确保所有特征都是数值类型
+    for col in X.columns:
+        if X[col].dtype not in ['int64', 'float64', 'int32', 'float32']:
+            try:
+                X[col] = pd.to_numeric(X[col], errors='coerce')
+            except:
+                X = X.drop(col, axis=1)
+    
+    # 处理缺失值
+    X = X.fillna(X.median())
+    
     # 获取目标变量
     y = df[target_col]
+    
+    # 确保目标变量也是数值类型
+    y = pd.to_numeric(y, errors='coerce')
     
     return {
         'X': X,
@@ -198,6 +212,35 @@ def build_feature_matrix(df: pd.DataFrame, target_col: str,
         'scaler': scaler,
         'feature_names': X.columns.tolist()
     }
+
+def full_feature_engineering_pipeline(df: pd.DataFrame, target_col: str) -> Dict:
+    """
+    完整的特征工程流程，确保所有分类特征都被编码
+    
+    Args:
+        df: 原始数据集
+        target_col: 目标列名
+    
+    Returns:
+        特征工程结果字典
+    """
+    # 识别特征类型
+    feature_types = identify_feature_types(df)
+    
+    # 构建特征矩阵
+    result = build_feature_matrix(
+        df,
+        target_col,
+        categorical_cols=feature_types['categorical_cols'],
+        numeric_cols=feature_types['numeric_cols'],
+        ai_feature_cols=feature_types['ai_feature_cols']
+    )
+    
+    # 添加额外信息
+    result['df_engineered'] = df
+    result['feature_types'] = feature_types
+    
+    return result
 
 def identify_feature_types(df: pd.DataFrame) -> Dict:
     """

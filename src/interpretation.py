@@ -49,18 +49,22 @@ def shap_analysis(model, X: pd.DataFrame, feature_names: Optional[List[str]] = N
                          if any(keyword in name.lower() for keyword in 
                                ['anxiety', 'satisfaction', 'quality', 'service', 'convenience', 'value'])]
     
-    ai_contributions = {
-        feature_names[i]: {
-            'mean_abs_shap': np.mean(np.abs(shap_values[:, i])),
-            'mean_shap': np.mean(shap_values[:, i]),
-            'positive_ratio': np.mean(shap_values[:, i] > 0)
+    if ai_feature_indices:
+        ai_contributions = {
+            feature_names[i]: {
+                'mean_abs_shap': np.mean(np.abs(shap_values[:, i])),
+                'mean_shap': np.mean(shap_values[:, i]),
+                'positive_ratio': np.mean(shap_values[:, i] > 0)
+            }
+            for i in ai_feature_indices
         }
-        for i in ai_feature_indices
-    }
-    
-    ai_contributions_df = pd.DataFrame(ai_contributions).T.reset_index()
-    ai_contributions_df.columns = ['AI_Feature', 'Mean_Absolute_SHAP', 'Mean_SHAP', 'Positive_Ratio']
-    ai_contributions_df = ai_contributions_df.sort_values('Mean_Absolute_SHAP', ascending=False)
+        
+        ai_contributions_df = pd.DataFrame(ai_contributions).T.reset_index()
+        ai_contributions_df.columns = ['AI_Feature', 'Mean_Absolute_SHAP', 'Mean_SHAP', 'Positive_Ratio']
+        ai_contributions_df = ai_contributions_df.sort_values('Mean_Absolute_SHAP', ascending=False)
+    else:
+        # 如果没有AI特征，返回空DataFrame
+        ai_contributions_df = pd.DataFrame(columns=['AI_Feature', 'Mean_Absolute_SHAP', 'Mean_SHAP', 'Positive_Ratio'])
     
     return {
         'explainer': explainer,
