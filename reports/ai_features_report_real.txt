@@ -1,0 +1,145 @@
+============================================================
+SHAP可解释性分析报告
+============================================================
+
+一、模型性能概览
+----------------------------------------
+R²分数: 1.0000
+MAE: 0.00
+RMSE: 0.00
+
+二、全局特征重要性（Top 10）
+----------------------------------------
+14. model_year: 0.6807
+1. electric_range: 0.4726
+32. make_encoded: 0.1398
+33. model_encoded: 0.1026
+2. battery_anxiety_mean: 0.0937
+34. ev_type_encoded: 0.0789
+37. brand_encoded: 0.0665
+23. age: 0.0601
+3. charging_convenience_min: 0.0242
+5. interior_quality_max: 0.0045
+
+三、AI特征贡献度分析
+----------------------------------------
+battery_anxiety_mean:
+  - 平均绝对SHAP值: 0.0937
+  - 平均SHAP值: 0.0865
+  - 正向贡献比例: 95.18%
+charging_convenience_min:
+  - 平均绝对SHAP值: 0.0242
+  - 平均SHAP值: 0.0226
+  - 正向贡献比例: 95.18%
+interior_quality_max:
+  - 平均绝对SHAP值: 0.0045
+  - 平均SHAP值: 0.0044
+  - 正向贡献比例: 95.18%
+interior_quality_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+after_sales_service_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+smart_driving_satisfaction_mean:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+battery_anxiety_max:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+value_for_money_min:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+range_satisfaction_max:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+value_for_money_mean:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+smart_driving_satisfaction_min:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+charging_convenience_max:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+range_satisfaction_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+smart_driving_satisfaction_max:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+after_sales_service_min:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+battery_anxiety_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+after_sales_service_mean:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+interior_quality_mean:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+charging_convenience_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+range_satisfaction_min:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+battery_anxiety_min:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+smart_driving_satisfaction_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+interior_quality_min:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+charging_convenience_mean:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+value_for_money_max:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+range_satisfaction_mean:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+after_sales_service_max:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+value_for_money_std:
+  - 平均绝对SHAP值: 0.0000
+  - 平均SHAP值: 0.0000
+  - 正向贡献比例: 0.00%
+
+四、关键发现
+----------------------------------------
+1. 最重要的AI特征是'battery_anxiety_mean'，其平均绝对SHAP值为0.0937
+2. 以下特征通常对价格产生正向影响: battery_anxiety_mean, charging_convenience_min, interior_quality_max
+3. 以下特征通常对价格产生负向影响: electric_range, state_encoded, interior_quality_std, charging_convenience_max, after_sales_service_std, battery_anxiety_max, smart_driving_satisfaction_mean, range_satisfaction_max, value_for_money_mean, smart_driving_satisfaction_min, value_for_money_min, charging_convenience_std, interior_quality_mean, after_sales_service_mean, battery_anxiety_std, after_sales_service_min, smart_driving_satisfaction_max, range_satisfaction_std, range_satisfaction_min, range_satisfaction_mean, value_for_money_max, charging_convenience_mean, interior_quality_min, smart_driving_satisfaction_std, battery_anxiety_min, after_sales_service_max, value_for_money_std
+
+============================================================

@@ -13,29 +13,35 @@ load_dotenv()
 class ReviewFeatureExtractor:
     """
     使用LLM从车主评论中提取结构化特征
-    支持: OpenAI API, Hugging Face Inference API, 模拟数据
+    支持: OpenAI API, Hugging Face Inference API, 阿里云百炼API, 模拟数据
     """
     
-    def __init__(self, api_type: str = 'mock', api_key: Optional[str] = None):
+    def __init__(self, api_type: str = 'mock', api_key: Optional[str] = None, 
+                 api_base: Optional[str] = None, model: Optional[str] = None):
         """
         初始化
         
         Args:
             api_type: API类型 ('openai', 'huggingface', 'mock')
             api_key: API密钥
+            api_base: API基础URL（用于自定义API端点，如阿里云百炼）
+            model: 默认模型名称
         """
         self.api_type = api_type
+        self.default_model = model
         
         if api_type == 'openai':
             try:
-                import openai
-                self.client = openai
+                from openai import OpenAI
                 if api_key:
-                    openai.api_key = api_key
+                    if api_base:
+                        self.client = OpenAI(api_key=api_key, base_url=api_base)
+                    else:
+                        self.client = OpenAI(api_key=api_key)
                 else:
-                    openai.api_key = os.getenv('OPENAI_API_KEY')
+                    self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
                 
-                if not openai.api_key:
+                if not self.client.api_key:
                     raise ValueError("未提供OpenAI API密钥")
             except ImportError:
                 print("警告: 未安装openai库，将使用模拟数据")
@@ -84,13 +90,15 @@ class ReviewFeatureExtractor:
         """
         return prompt.strip()
     
-    def _extract_openai(self, review_text: str, model: str = "gpt-3.5-turbo") -> Dict[str, float]:
-        """使用OpenAI API提取特征"""
+    def _extract_openai(self, review_text: str, model: str = None) -> Dict[str, float]:
+        """使用OpenAI API提取特征（支持阿里云百炼等兼容API）"""
         prompt = self._build_prompt(review_text)
+        # 使用默认模型或传入的模型
+        target_model = model or self.default_model or "gpt-3.5-turbo"
         
         try:
-            response = self.client.ChatCompletion.create(
-                model=model,
+            response = self.client.chat.completions.create(
+                model=target_model,
                 messages=[
                     {"role": "system", "content": "你是一个专业的汽车评论分析专家"},
                     {"role": "user", "content": prompt}
@@ -103,7 +111,7 @@ class ReviewFeatureExtractor:
             return result
             
         except Exception as e:
-            print(f"OpenAI API错误: {e}")
+            print(f"API错误: {e}")
             return self._generate_mock_features()
     
     def _extract_huggingface(self, review_text: str, model: str = "mistralai/Mistral-7B-Instruct-v0.3") -> Dict[str, float]:
@@ -158,7 +166,7 @@ class ReviewFeatureExtractor:
             各维度评分字典
         """
         if self.api_type == 'openai':
-            return self._extract_openai(review_text, model or "gpt-3.5-turbo")
+            return self._extract_openai(review_text, model)
         elif self.api_type == 'huggingface':
             return self._extract_huggingface(review_text, model or "mistralai/Mistral-7B-Instruct-v0.3")
         else:

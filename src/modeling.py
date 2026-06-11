@@ -348,12 +348,20 @@ def ablation_study(X_traditional: pd.DataFrame, X_enhanced: pd.DataFrame, y: pd.
     Returns:
         对比结果字典
     """
+    # 处理y中的NaN值
+    y_clean = pd.to_numeric(y, errors='coerce')
+    valid_mask = ~y_clean.isna()
+    
+    X_traditional_clean = X_traditional[valid_mask].copy()
+    X_enhanced_clean = X_enhanced[valid_mask].copy()
+    y_clean = y_clean[valid_mask]
+    
     # 分割数据
     X_train_t, X_test_t, y_train, y_test = train_test_split(
-        X_traditional, y, test_size=0.2, random_state=42
+        X_traditional_clean, y_clean, test_size=0.2, random_state=42
     )
     X_train_e, X_test_e, _, _ = train_test_split(
-        X_enhanced, y, test_size=0.2, random_state=42
+        X_enhanced_clean, y_clean, test_size=0.2, random_state=42
     )
     
     # 构建模型
